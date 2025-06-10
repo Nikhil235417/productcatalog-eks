@@ -1,0 +1,23 @@
+ version: 0.2
+ 
+ phases:
+   pre_build:
+     commands:
+        - echo Logging in to Docker Hub...
+        - DOCKER_USERNAME=$(aws ssm get-parameter --name/dockerhub/username --with-decryption --query Parameter.Value --output text)
+        - DOCKER_PASSWORD=$(aws ssm get-parameter --name /dockerhub/password --with-decryption --query Parameter.Value --output text)
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - IMAGE_NAME=$DOCKER_USERNAME/productcatalogservice
+        - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+        - IMAGE_TAG=${COMMIT_HASH:=laest}
+  build:
+    commands:
+      - echo building Docker iage...
+      - docker build -t $Image_Name:$Image_TAG
+      - docker push $IMAGE_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Deploying to EKS...
+      - sed -i "s|<IMAGE_URI>|$IMAGE_NAME:$IMAGE_TAG|g"k8s/deployment.yaml
+      - kubectl apply -k8s/
+
