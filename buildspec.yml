@@ -18,5 +18,7 @@ phases:
     commands:
       - echo Pushing image to DockerHub
       - docker push "$DOCKERHUB_USER"/productcatalog:latest
-      # - echo Deploying to EKS...
-      # - kubectl apply -f k8s/
+      - echo Updating kubeconfig...
+      - aws eks update-kubeconfig --region eu-north-1 --name Eks-First-Cluster
+      - echo Deploying to EKS...
+      - kubectl apply -f k8s/
