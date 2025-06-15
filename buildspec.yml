@@ -6,7 +6,7 @@
         - echo Logging in to Docker Hub...
         - DOCKERHUB_USER=$(aws ssm get-parameter --name/dockerhub/username --with-decryption --query Parameter.Value --output text)
         - DOCKERHUB_PASS=$(aws ssm get-parameter --name /dockerhub/password --with-decryption --query Parameter.Value --output text)
-        - echo "$DOCKER_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+        - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
         # - echo getting eks credentials...
         # - aws eks update-kubeconfig --region <eu-north-1> --name <EkS-First-Cluster>
   build:
