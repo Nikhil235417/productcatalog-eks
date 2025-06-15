@@ -1,23 +1,22 @@
- version: 0.2
+version: 0.2
  
- phases:
-   pre_build:
-     commands:
-        - echo Logging in to Docker Hub...
-        - DOCKERHUB_USER=$(aws ssm get-parameter --name/dockerhub/username --with-decryption --query Parameter.Value --output text)
-        - DOCKERHUB_PASS=$(aws ssm get-parameter --name /dockerhub/password --with-decryption --query Parameter.Value --output text)
-        - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-        # - echo getting eks credentials...
-        # - aws eks update-kubeconfig --region <eu-north-1> --name <EkS-First-Cluster>
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Docker Hub...
+      - DOCKERHUB_USER=$(aws ssm get-parameter --name /dockerhub/username --with-decryption --query Parameter.Value --output text)
+      - DOCKERHUB_PASS=$(aws ssm get-parameter --name /dockerhub/password --with-decryption --query Parameter.Value --output text)
+      - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+      # - echo getting eks credentials...
+      # - aws eks update-kubeconfig --region <eu-north-1> --name <EkS-First-Cluster>
   build:
     commands:
-      - echo building Docker iage...
-      - docker build -t "$DOCKERHUB_USER"/productcatalog:latest.
+      - echo building Docker image...
+      - docker build -t "$DOCKERHUB_USER"/productcatalog:latest .
     
   post_build:
     commands:
       - echo Pushing image to DockerHub
       - docker push "$DOCKERHUB_USER"/productcatalog:latest
-     # - echo Deploying to EKS...
-     # - kubectl apply -f k8s/
-
+      # - echo Deploying to EKS...
+      # - kubectl apply -f k8s/
